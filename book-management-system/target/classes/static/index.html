@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>图书管理系统</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">图书管理系统</div>
+  <nav>
+    <button data-tab="books">图书</button>
+    <button data-tab="records">借阅记录</button>
+    <button data-tab="ai">人工智能问答</button>
+    <button data-tab="admin" class="admin-only">管理员后台</button>
+  </nav>
+  <div class="userbox"><span id="userText">未登录</span><button id="logoutBtn">退出</button></div>
+</header>
+<main>
+  <section id="loginView" class="auth">
+    <div class="auth-card">
+      <h1>登录</h1>
+      <p>默认账号：admin/admin123，reader/reader123</p>
+      <input id="loginUsername" placeholder="用户名" value="reader">
+      <input id="loginPassword" placeholder="密码" type="password" value="reader123">
+      <button id="loginBtn">登录</button>
+      <hr>
+      <h2>读者注册</h2>
+      <input id="regUsername" placeholder="新用户名">
+      <input id="regName" placeholder="显示名称">
+      <input id="regPassword" placeholder="密码至少 6 位" type="password">
+      <button id="regBtn">注册并登录</button>
+    </div>
+  </section>
+
+  <section id="appView" class="hidden">
+    <div id="toast"></div>
+    <section id="books" class="page">
+      <div class="toolbar">
+        <div><h1>馆藏图书</h1><p>搜索图书、查看库存，并完成借阅操作。</p></div>
+        <div class="search"><input id="keyword" placeholder="书名、作者或 ISBN"><button id="searchBtn">搜索</button></div>
+      </div>
+      <div id="bookList" class="grid"></div>
+    </section>
+
+    <section id="records" class="page hidden">
+      <h1>借阅记录</h1>
+      <table>
+        <thead><tr><th>读者</th><th>图书</th><th>借阅时间</th><th>应还时间</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody id="recordRows"></tbody>
+      </table>
+    </section>
+
+    <section id="ai" class="page hidden ai-layout">
+      <div class="panel">
+        <h1>人工智能问答</h1>
+        <div class="inline"><input id="question" placeholder="例如：怎么借书？逾期怎么办？"><button id="askBtn">提问</button></div>
+        <p id="answer" class="answer"></p>
+      </div>
+      <div class="panel">
+        <h2>智能推荐</h2>
+        <ul id="recommendList"></ul>
+      </div>
+      <div class="panel admin-only wide">
+        <h2>AI 图书简介生成</h2>
+        <div class="inline three"><input id="aiTitle" placeholder="书名"><input id="aiAuthor" placeholder="作者"><input id="aiCategory" placeholder="分类"><button id="descBtn">生成</button></div>
+        <p id="generatedDesc" class="answer"></p>
+      </div>
+    </section>
+
+    <section id="admin" class="page hidden">
+      <h1>管理员后台</h1>
+      <div id="stats" class="stats"></div>
+      <div class="panel">
+        <h2>分类管理</h2>
+        <div class="inline"><input id="catName" placeholder="分类名称"><input id="catDesc" placeholder="分类说明"><button id="addCatBtn">新增分类</button></div>
+        <div id="categoryList" class="chips"></div>
+      </div>
+      <div class="panel">
+        <h2>图书维护</h2>
+        <div class="form-grid">
+          <input id="bookId" type="hidden">
+          <input id="bookTitle" placeholder="书名">
+          <input id="bookAuthor" placeholder="作者">
+          <input id="bookIsbn" placeholder="ISBN">
+          <input id="bookPublisher" placeholder="出版社">
+          <input id="bookTotal" type="number" placeholder="总库存">
+          <input id="bookAvailable" type="number" placeholder="可借库存">
+          <select id="bookCategory"></select>
+          <textarea id="bookDesc" placeholder="简介"></textarea>
+        </div>
+        <button id="saveBookBtn">保存图书</button>
+      </div>
+    </section>
+  </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
