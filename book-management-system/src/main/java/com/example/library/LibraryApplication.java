@@ -37,19 +37,19 @@ public class LibraryApplication {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
-    @Value("${llm.enabled:false}")
+    @Value("${llm.enabled:true}")
     private boolean llmEnabled;
 
-    @Value("${llm.api-key:}")
+    @Value("${llm.api-key:sk-41867f76f1bc447cad1f950c026cb43e}")
     private String llmApiKey;
 
-    @Value("${llm.base-url:https://api.openai.com/v1/chat/completions}")
+    @Value("${llm.base-url:https://api.deepseek.com/chat/completions}")
     private String llmBaseUrl;
 
-    @Value("${llm.model:gpt-4o-mini}")
+    @Value("${llm.model:deepseek-v4-pro}")
     private String llmModel;
 
-    private String lastLlmError = "LLM has not been called yet.";
+    private String lastLlmError = "暂未调用真实大模型。";
 
     public LibraryApplication(JdbcTemplate jdbc, ObjectMapper objectMapper) {
         this.jdbc = jdbc;
@@ -291,12 +291,12 @@ public class LibraryApplication {
     private Optional<String> askLargeModel(String question) {
         if (!llmEnabled || llmApiKey == null || llmApiKey.isBlank()) {
             lastLlmError = !llmEnabled
-                    ? "LLM_ENABLED is false or not set for the running Java process."
-                    : "LLM_API_KEY is empty or not visible to the running Java process.";
+                    ? "真实大模型未启用：请在运行项中设置 LLM_ENABLED=true。"
+                    : "真实大模型密钥为空：请在运行项中设置 LLM_API_KEY。";
             return Optional.empty();
         }
         try {
-            lastLlmError = "Calling real LLM...";
+            lastLlmError = "正在连接真实大模型...";
             Map<String, Object> requestBody = new LinkedHashMap<>();
             requestBody.put("model", llmModel);
             requestBody.put("temperature", 0.3);
@@ -314,16 +314,16 @@ public class LibraryApplication {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                lastLlmError = "LLM request failed: HTTP " + response.statusCode() + " " + response.body();
+                lastLlmError = "真实大模型请求失败：HTTP " + response.statusCode() + "，返回内容：" + response.body();
                 System.out.println(lastLlmError);
                 return Optional.empty();
             }
             JsonNode root = objectMapper.readTree(response.body());
             String answer = root.path("choices").path(0).path("message").path("content").asText("").trim();
-            lastLlmError = answer.isBlank() ? "LLM returned an empty answer." : "LLM request succeeded.";
+            lastLlmError = answer.isBlank() ? "真实大模型返回了空回答。" : "真实大模型请求成功。";
             return answer.isBlank() ? Optional.empty() : Optional.of(answer);
         } catch (Exception e) {
-            lastLlmError = "LLM request failed, fallback to local AI: " + e.getMessage();
+            lastLlmError = "真实大模型连接失败，已自动切换为本地后备方案。详细原因：" + e.getMessage();
             System.out.println(lastLlmError);
             return Optional.empty();
         }

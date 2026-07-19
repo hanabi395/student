@@ -124,7 +124,7 @@ async function askAi() {
   $('answer').textContent = '正在思考...';
   try {
     const data = await post('/api/ai/ask', {question});
-    const source = data.source === 'llm' ? '真实大模型' : '本地后备方案';
+    const source = data.source === 'llm' ? '真实大模型' : '真实大模型暂不可用，已使用本地后备方案';
     const reason = data.reason ? `\n\n原因：${data.reason}` : '';
     $('answer').textContent = `[${source}] ${data.answer || '没有返回回答。'}${reason}`;
   } catch (e) {
